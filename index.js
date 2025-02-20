@@ -2,9 +2,10 @@ const express = require('express');
 const { resolve } = require('path');
 const mongoose = require('mongoose');
 require('dotenv').config();
-const user = require('./schema');
+const User = require('./schema');
 
 const app = express();
+app.use(express.json())
 const port = 3010;
 
 mongoose.connect(process.env.MONGO_URI).then(()=>{
@@ -22,8 +23,12 @@ app.get('/', (req, res) => {
 
 app.post('/api/users', async (req,res)=>{
   try{
-    const data = req.body;
-    const newUser = new user(data);
+    const newUser = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password
+    })
+
     await newUser.save();
     res.status(201).json({ message: 'User created successfully' });
   }
